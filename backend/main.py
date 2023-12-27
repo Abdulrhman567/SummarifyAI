@@ -1,6 +1,7 @@
 import shutil
 from fastapi import FastAPI, WebSocket, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+import openai
 from pathlib import Path
 from chatbot import ChatBotAssistant
 
@@ -15,6 +16,12 @@ def delete_loaded_file(folder_path):
                 file_path.unlink()
         except Exception as e:
             print(f"Error deleting file {file_path}: {e}")
+
+
+def check_moderation(data_to_check):
+    if openai.moderations.create(input=data_to_check)["results"][0]["flagged"]:
+        return True
+    return False
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,6 +40,11 @@ async def create_upload_file(file_upload: UploadFile,
     data = await file_upload.read()
     save_to = UPLOAD_DIR / file_upload.filename
     delete_loaded_file(str(save_to))
+    
+    if check_moderation(save_to):
+        print("The uploader file is inappropriate")
+    else:
+        print("You are all good")
 
     with open(save_to, 'wb') as f:
         f.write(data)

@@ -35,10 +35,10 @@ ner_prompt_template = """
 ROLE: To extract information of the text at the end between the delimiter ### in a specific format.
 
 ***important***
-1) Extract the names of the individuals.
-2) Extract the names of the organizations.
-3) Extract the names of the places.
-4) Extract the dates, and time.
+1) Extract ALL the names of the individuals.
+2) Extract ALL the names of the organizations.
+3) Extract ALL the names of the places.
+4) Extract ALL the dates, and time.
 5) DON'T make things up, just extract the information based on the text.
 6) Return the extracted information in JSON, key is label, value is list of itmes.
 7) Lables are:
@@ -59,18 +59,21 @@ NOTES:
 * If any lable is not exist, the list should have only "Not have".
 * Think about your extracted information before returning it, Is it correct? Is it in the same format (JSON)?
 
+FINAL NOTE:
+  - Take your time, Check again if you extract all the information from the entire text.
+
 INPUTES:
 text: ###{text}###
 
 Extracted information in JSON format:
 """
-
 chatbot_prompt_template = """
 ROLE:
 You are an AI chatbot assistant that will help users to know more about their data and answer the user's questions based on their data/
 Your task is to answer the user's questions based on a given document dilimeted in triple backticks, answer the user's questions with these steps below: / 
 
 Note: every thing dilimeted by double astrickts ** is VERY important.
+Note: Take your time to think and don't ruch to give an answer
 
 Check Main goals:
 - answer the user's question with high degree of details. /
@@ -87,6 +90,9 @@ Check Main goals:
 Examples: 
 - when answering, Add at the end of each response 'Feel free to ask more 😀'
 - When you don't know the answer, you MUST respond with 'I don't know the answer of your question'
+
+Output:
+The answer **MUST** be short, consice, precise and well detailed.
 
 Input: 
 ```{document}```
